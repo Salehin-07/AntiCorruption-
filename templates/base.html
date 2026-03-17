@@ -1,0 +1,202 @@
+{% load static pwa %}
+<!DOCTYPE html>
+<html lang="en" prefix="og: https://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TITLE & CORE META
+    ═══════════════════════════════════════════════════════════════ -->
+    <title>{% block title %}AntiCorruption — Report Corruption Anonymously & Safely{% endblock %}</title>
+    <meta name="description"            content="{% block meta_description %}AntiCorruption is a free, anonymous platform to expose and report corruption. No registration required. Submit or browse verified corruption reports safely.{% endblock %}">
+    <meta name="keywords"               content="{% block meta_keywords %}anticorruption, report corruption anonymously, expose corruption, corruption whistleblower, transparency platform, corruption reports, anonymous reporting{% endblock %}">
+    <meta name="subject"                content="Anti-Corruption & Transparency">
+    <meta name="author"                 content="AntiCorruption">
+    <meta name="copyright"              content="AntiCorruption">
+    <meta name="language"               content="English">
+    <meta name="revisit-after"          content="3 days">
+    <meta name="robots"                 content="{% block meta_robots %}index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1{% endblock %}">
+    <meta name="googlebot"              content="{% block googlebot %}index, follow, max-snippet:-1, max-image-preview:large{% endblock %}">
+    <meta name="bingbot"                content="index, follow">
+    <meta name="rating"                 content="general">
+    <meta name="category"               content="civic, transparency, accountability">
+    <meta name="classification"         content="Civic Technology">
+    <meta name="coverage"               content="Worldwide">
+    <meta name="distribution"           content="Global">
+    <meta name="target"                 content="all">
+    <meta name="HandheldFriendly"       content="True">
+    <meta name="MobileOptimized"        content="320">
+    <meta name="theme-color"            content="#0a0a0a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color"            content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="color-scheme"           content="dark light">
+    <meta name="format-detection"       content="telephone=no, address=no, email=no">
+    <link rel="canonical"               href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HREFLANG — extend as you add languages
+    ═══════════════════════════════════════════════════════════════ -->
+    <link rel="alternate" hreflang="en"         href="{{ request.build_absolute_uri }}">
+    <link rel="alternate" hreflang="x-default"  href="{{ request.build_absolute_uri }}">
+    {% block hreflang %}{% endblock %}
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         OPEN GRAPH — Facebook · LinkedIn · WhatsApp · iMessage
+    ═══════════════════════════════════════════════════════════════ -->
+    <meta property="og:site_name"           content="AntiCorruption">
+    <meta property="og:type"                content="{% block og_type %}website{% endblock %}">
+    <meta property="og:locale"              content="en_US">
+    <meta property="og:title"               content="{% block og_title %}AntiCorruption — Report Corruption Anonymously & Safely{% endblock %}">
+    <meta property="og:description"         content="{% block og_description %}Expose and report corruption safely. 100% anonymous. No sign-up required. Your voice, protected.{% endblock %}">
+    <meta property="og:url"                 content="{{ request.build_absolute_uri }}">
+    <meta property="og:image"               content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endblock %}">
+    <meta property="og:image:secure_url"    content="{% block og_image_secure %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endblock %}">
+    <meta property="og:image:type"          content="image/png">
+    <meta property="og:image:width"         content="1200">
+    <meta property="og:image:height"        content="630">
+    <meta property="og:image:alt"           content="{% block og_image_alt %}AntiCorruption — report corruption anonymously{% endblock %}">
+    {% block og_extra %}{% endblock %}
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TWITTER / X CARDS
+    ═══════════════════════════════════════════════════════════════ -->
+    <meta name="twitter:card"               content="summary_large_image">
+    <meta name="twitter:site"               content="@AntiCorruption">
+    <meta name="twitter:creator"            content="@AntiCorruption">
+    <meta name="twitter:title"              content="{% block twitter_title %}AntiCorruption — Report Corruption Anonymously{% endblock %}">
+    <meta name="twitter:description"        content="{% block twitter_description %}Expose corruption safely. Anonymous. No sign-up. Free forever.{% endblock %}">
+    <meta name="twitter:image"              content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endblock %}">
+    <meta name="twitter:image:alt"          content="{% block twitter_image_alt %}AntiCorruption platform{% endblock %}">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SCHEMA.ORG JSON-LD — WebSite + Organization + WebPage
+    ═══════════════════════════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "@id": "{{ request.scheme }}://{{ request.get_host }}/#website",
+                "url": "{{ request.scheme }}://{{ request.get_host }}/",
+                "name": "AntiCorruption",
+                "description": "A free, anonymous platform for reporting and exposing corruption worldwide.",
+                "inLanguage": "en-US",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "{{ request.scheme }}://{{ request.get_host }}{% url 'post_corruption' %}?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@type": "Organization",
+                "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization",
+                "name": "AntiCorruption",
+                "url": "{{ request.scheme }}://{{ request.get_host }}/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}",
+                    "width": 512,
+                    "height": 512
+                },
+                "description": "AntiCorruption is a free, anonymous, community-powered platform for exposing corruption.",
+                "foundingDate": "2024",
+                "areaServed": "Worldwide",
+                "knowsAbout": ["Corruption", "Transparency", "Civic Accountability", "Whistleblowing"],
+                "sameAs": []
+            },
+            {
+                "@type": "WebPage",
+                "@id": "{{ request.build_absolute_uri }}#webpage",
+                "url": "{{ request.build_absolute_uri }}",
+                "name": "{% block ld_title %}AntiCorruption — Report Corruption Anonymously{% endblock %}",
+                "description": "{% block ld_description %}Report and browse corruption cases anonymously. Free, safe, no registration.{% endblock %}",
+                "isPartOf": { "@id": "{{ request.scheme }}://{{ request.get_host }}/#website" },
+                "about": { "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization" },
+                "inLanguage": "en-US",
+                "dateModified": "{% now 'Y-m-d' %}"
+            }
+        ]
+    }
+    </script>
+
+    <!-- Per-page structured data (Article, BreadcrumbList, FAQPage, Event …) -->
+    {% block structured_data %}{% endblock %}
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FAVICONS & APP ICONS
+    ═══════════════════════════════════════════════════════════════ -->
+    <link rel="icon"                href="{% static 'img/logo.ico' %}" sizes="any">
+    <link rel="icon"                href="{% static 'img/logo.png' %}" type="image/png">
+    <link rel="apple-touch-icon"    href="{% static 'img/logo.png' %}">
+    <link rel="shortcut icon"       href="{% static 'img/logo.ico' %}">
+    <meta name="msapplication-TileImage"    content="{% static 'img/logo.png' %}">
+    <meta name="msapplication-TileColor"    content="#0a0a0a">
+    <meta name="msapplication-config"       content="{% static 'browserconfig.xml' %}">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PROGRESSIVE WEB APP
+    ═══════════════════════════════════════════════════════════════ -->
+    {% progressive_web_app_meta %}
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PERFORMANCE — DNS PREFETCH & PRECONNECT
+    ═══════════════════════════════════════════════════════════════ -->
+    <link rel="dns-prefetch"    href="//fonts.googleapis.com">
+    <link rel="dns-prefetch"    href="//fonts.gstatic.com">
+    <link rel="preconnect"      href="https://fonts.googleapis.com">
+    <link rel="preconnect"      href="https://fonts.gstatic.com" crossorigin>
+    {% block preconnect %}{% endblock %}
+
+    <!-- Critical asset preloads (override per page) -->
+    {% block preload %}{% endblock %}
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         STYLESHEETS
+    ═══════════════════════════════════════════════════════════════ -->
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+    <!-- ACCESSIBILITY: skip to main content -->
+   <!--  <a class="skip-link" href="#main-content">Skip to main content</a>
+ -->
+    <!-- ── NAVIGATION ── -->
+    {% include 'nav.html' %}
+
+    <!-- ── OPTIONAL SITE-WIDE ANNOUNCEMENT BANNER ── -->
+    {% block announcement %}{% endblock %}
+
+    <!-- ── DJANGO MESSAGES ── -->
+    {% if messages %}
+    <div class="ac-messages" role="alert" aria-live="polite" aria-atomic="false">
+        {% for message in messages %}
+        <div class="ac-message ac-message--{{ message.tags }}" role="status">
+            <span>{{ message }}</span>
+            <button class="ac-message__close" aria-label="Dismiss notification">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ── MAIN CONTENT ── -->
+    <main id="main-content" class="ac-main" tabindex="-1" role="main"
+          aria-label="{% block main_aria_label %}Main content{% endblock %}">
+        {% block breadcrumbs %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ── -->
+    {% include 'footer.html' %}
+
+    <!-- ── GLOBAL JS ── -->
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

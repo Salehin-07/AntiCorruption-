@@ -1,0 +1,860 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AntiCorruption — Expose the Truth. Protect the People.{% endblock %}
+{% block meta_description %}Browse verified corruption reports submitted anonymously. Real evidence. Real accountability. Report corruption safely — no sign-up required.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   DESIGN SYSTEM — investigative editorial dark
+   Prefix: hm__
+══════════════════════════════════════════════ */
+.hm__root {
+  --bg:           #080808;
+  --bg-card:      #0e0e0e;
+  --bg-card-hover:#131313;
+  --bg-surface:   #111111;
+  --line:         #1e1e1e;
+  --line-mid:     #2a2a2a;
+  --text:         #e2ddd6;
+  --text-dim:     #7a7570;
+  --text-faint:   #3a3835;
+  --red:          #e63227;
+  --red-dim:      #7a1a15;
+  --red-glow:     rgba(230,50,39,0.08);
+  --white:        #f0ece6;
+  --mono:         'IBM Plex Mono', monospace;
+  --display:      'Bebas Neue', sans-serif;
+  --serif:        'Libre Baskerville', Georgia, serif;
+  --sans:         'Barlow', system-ui, sans-serif;
+  --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.hm__root {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── GRAIN OVERLAY ── */
+.hm__root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ══ HERO ══ */
+.hm__hero {
+  position: relative;
+  border-bottom: 1px solid var(--line-mid);
+  overflow: hidden;
+}
+.hm__hero::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--red);
+}
+.hm__hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 32px 56px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: end;
+}
+.hm__hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+}
+.hm__hero-kicker-dot {
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: hm-blink 1.4s ease-in-out infinite;
+}
+@keyframes hm-blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+.hm__hero-title {
+  font-family: var(--display);
+  font-size: clamp(64px, 10vw, 128px);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.hm__hero-title span { display: block; color: var(--red); }
+.hm__hero-sub {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.75;
+  max-width: 480px;
+  border-left: 2px solid var(--line-mid);
+  padding-left: 16px;
+}
+.hm__hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 24px;
+}
+.hm__report-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--red);
+  color: var(--white);
+  text-decoration: none;
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 24px 32px;
+  width: 180px;
+  box-shadow: 4px 4px 0 var(--red-dim);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s, background 0.15s;
+}
+.hm__report-btn:hover {
+  background: #f03c31;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--red-dim);
+}
+.hm__report-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--red-dim);
+}
+.hm__report-btn-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: rgba(240,236,230,0.6);
+  text-transform: uppercase;
+}
+
+/* Stats strip */
+.hm__stats-strip {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--line);
+}
+.hm__stats-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+}
+.hm__stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px 16px 0;
+  border-right: 1px solid var(--line);
+  margin-right: 32px;
+}
+.hm__stat:last-child { border-right: none; }
+.hm__stat-num {
+  font-family: var(--display);
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  color: var(--red);
+  line-height: 1;
+}
+.hm__stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  line-height: 1.4;
+}
+
+/* ══ FEED ══ */
+.hm__feed-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+.hm__feed-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--line-mid);
+}
+.hm__feed-label {
+  font-family: var(--display);
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  text-transform: uppercase;
+}
+.hm__feed-total {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+  margin-left: auto;
+}
+
+/* ══ CARD ══ */
+.hm__card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  margin-bottom: 2px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hm-up 0.6s var(--ease) forwards;
+  transition: background 0.2s, border-color 0.2s;
+}
+.hm__card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--line-mid);
+}
+@keyframes hm-up {
+  to { opacity: 1; transform: none; }
+}
+.hm__card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: var(--red);
+  transition: width 0.2s var(--ease);
+}
+.hm__card:hover::before { width: 3px; }
+
+.hm__card-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.hm__card-report-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.hm__card-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-left: auto;
+}
+.hm__card-verified-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: hm-blink 1.8s ease-in-out infinite;
+}
+
+.hm__card-body { padding: 20px 20px 16px; }
+.hm__card-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--white);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+.hm__card-desc {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hm__read-more {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-block;
+  transition: color 0.15s;
+}
+.hm__read-more:hover { color: var(--white); }
+
+/* ══ MEDIA GRID ══ */
+.hm__media {
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+}
+.hm__media-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--bg);
+}
+.hm__media-grid[data-count="1"]    { grid-template-columns: 1fr; }
+.hm__media-grid[data-count="1"] .hm__media-item { height: 380px; }
+.hm__media-grid[data-count="2"]    { grid-template-columns: 1fr 1fr; }
+.hm__media-grid[data-count="2"] .hm__media-item { height: 260px; }
+.hm__media-grid[data-count="3"] {
+  grid-template-columns: 3fr 2fr;
+  grid-template-rows: auto auto;
+  height: 320px;
+}
+.hm__media-grid[data-count="3"] .hm__media-item:nth-child(1) { grid-row: 1 / 3; height: 100%; }
+.hm__media-grid[data-count="3"] .hm__media-item:nth-child(2),
+.hm__media-grid[data-count="3"] .hm__media-item:nth-child(3) { height: 158px; }
+.hm__media-grid[data-count="4"],
+.hm__media-grid[data-count="many"] {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  height: 380px;
+}
+
+.hm__media-item {
+  position: relative;
+  overflow: hidden;
+  background: #0a0a0a;
+  cursor: pointer;
+  display: block;
+}
+.hm__media-item img,
+.hm__media-item video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease), filter 0.3s;
+  filter: brightness(0.9) saturate(0.85);
+}
+.hm__media-item:hover img,
+.hm__media-item:hover video {
+  transform: scale(1.04);
+  filter: brightness(1) saturate(1);
+}
+.hm__play-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(0,0,0,0.3);
+  transition: background 0.2s;
+}
+.hm__media-item:hover .hm__play-icon { background: rgba(0,0,0,0.15); }
+.hm__play-circle {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(230,50,39,0.9);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 8px rgba(230,50,39,0.15);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.hm__media-item:hover .hm__play-circle {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 12px rgba(230,50,39,0.1);
+}
+.hm__more-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8,8,8,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 40px;
+  color: var(--white);
+  pointer-events: none;
+  letter-spacing: 0.04em;
+}
+
+/* ══ CARD FOOTER ══ */
+.hm__card-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--line);
+}
+.hm__card-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+/* ══ EMPTY ══ */
+.hm__empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+.hm__empty-title {
+  font-family: var(--display);
+  font-size: 40px;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hm__empty-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--text-faint);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+/* ══ PAGINATION ══ */
+.hm__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 48px 0 16px;
+  flex-wrap: wrap;
+}
+.hm__pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.hm__pg-btn:hover {
+  color: var(--white);
+  border-color: var(--line-mid);
+  background: var(--bg-surface);
+}
+.hm__pg-btn.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+.hm__pg-btn.disabled { opacity: 0.25; pointer-events: none; }
+.hm__pg-ellipsis {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  padding: 0 4px;
+}
+
+/* ══ LIGHTBOX ══ */
+.hm__lb {
+  position: fixed;
+  inset: 0;
+  z-index: 9900;
+  background: rgba(0,0,0,0.98);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.hm__lb.open { display: flex; }
+.hm__lb-media {
+  max-width: min(95vw, 1200px);
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hm__lb-media img,
+.hm__lb-media video {
+  max-width: 100%;
+  max-height: 88vh;
+  object-fit: contain;
+  display: block;
+  box-shadow: 0 0 120px rgba(0,0,0,0.9);
+}
+.hm__lb-ui-btn {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--white);
+  cursor: pointer;
+  transition: background 0.15s;
+  z-index: 9901;
+}
+.hm__lb-ui-btn:hover { background: rgba(255,255,255,0.14); }
+.hm__lb-close { top: 20px; right: 20px; }
+.hm__lb-prev  { top: 50%; left: 16px;  transform: translateY(-50%); }
+.hm__lb-next  { top: 50%; right: 16px; transform: translateY(-50%); }
+.hm__lb-counter {
+  position: fixed;
+  bottom: 24px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(255,255,255,0.35);
+  z-index: 9901;
+}
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 680px) {
+  .hm__hero-inner { grid-template-columns: 1fr; padding: 44px 20px 40px; }
+  .hm__hero-right { flex-direction: row; align-items: flex-start; }
+  .hm__report-btn { width: auto; padding: 18px 24px; font-size: 18px; }
+  .hm__stats-inner { flex-wrap: wrap; padding: 0 20px; }
+  .hm__stat { padding: 12px 20px 12px 0; margin-right: 20px; }
+  .hm__feed-wrapper { padding: 28px 12px 60px; }
+  .hm__card-body { padding: 16px 16px 12px; }
+  .hm__card-meta-bar { padding: 10px 16px; }
+  .hm__card-footer { padding: 8px 16px; }
+  .hm__media-grid[data-count="1"] .hm__media-item { height: 260px; }
+  .hm__media-grid[data-count="3"] { height: 240px; }
+  .hm__media-grid[data-count="3"] .hm__media-item:nth-child(2),
+  .hm__media-grid[data-count="3"] .hm__media-item:nth-child(3) { height: 118px; }
+  .hm__media-grid[data-count="4"],
+  .hm__media-grid[data-count="many"] { height: 280px; }
+  .hm__lb-prev { left: 4px; }
+  .hm__lb-next { right: 4px; }
+}
+</style>
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Corruption Reports",
+  "description": "Anonymously submitted corruption reports.",
+  "url": "{{ request.build_absolute_uri }}",
+  "numberOfItems": {{ entries.paginator.count }}
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="hm__root">
+
+  <!-- ══ HERO ══ -->
+  <section class="hm__hero" aria-labelledby="hm-main-title">
+    <div class="hm__hero-inner">
+      <div class="hm__hero-left">
+        <div class="hm__hero-kicker">
+          <span class="hm__hero-kicker-dot"></span>
+          Live — Anonymous — Uncensored
+        </div>
+        <h1 class="hm__hero-title" id="hm-main-title">
+          Anti<span>Corruption</span>
+        </h1>
+        <p class="hm__hero-sub">
+          Every report filed here is permanent, anonymous, and free.
+          No registration. No tracking. Just evidence.
+        </p>
+      </div>
+      <div class="hm__hero-right">
+        <a href="{% url 'post_corruption' %}" class="hm__report-btn" aria-label="Submit a corruption report">
+          Report<br>Now
+          <span class="hm__report-btn-sub">Anonymous &amp; Free</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ STATS STRIP ══ -->
+  <div class="hm__stats-strip" role="region" aria-label="Platform statistics">
+    <div class="hm__stats-inner">
+      <div class="hm__stat">
+        <span class="hm__stat-num">{{ entries.paginator.count }}</span>
+        <span class="hm__stat-label">Reports<br>Filed</span>
+      </div>
+      <div class="hm__stat">
+        <span class="hm__stat-num">100%</span>
+        <span class="hm__stat-label">Fully<br>Anonymous</span>
+      </div>
+      <div class="hm__stat">
+        <span class="hm__stat-num">0</span>
+        <span class="hm__stat-label">Sign-ups<br>Required</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FEED ══ -->
+  <div class="hm__feed-wrapper">
+    <div class="hm__feed-header">
+      <h2 class="hm__feed-label">Reports</h2>
+      <span class="hm__feed-total">{{ entries.paginator.count }} TOTAL</span>
+    </div>
+
+    {% if entries %}
+      {% for entry in entries %}
+      {% with all_media=entry.media.all media_count=entry.media.count %}
+      <article class="hm__card"
+               style="animation-delay:{{ forloop.counter0 }}00ms"
+               aria-labelledby="et-{{ entry.id }}"
+               itemscope itemtype="https://schema.org/Article">
+
+        <div class="hm__card-meta-bar">
+          <span class="hm__card-report-id">REPORT — #{{ entry.id|stringformat:"05d" }}</span>
+          <span class="hm__card-verified" role="status">
+            <span class="hm__card-verified-dot"></span>
+            Verified
+          </span>
+        </div>
+
+        <div class="hm__card-body">
+          <h3 class="hm__card-title" id="et-{{ entry.id }}" itemprop="headline">{{ entry.title }}</h3>
+          <p class="hm__card-desc" id="hm-desc-{{ entry.id }}" itemprop="description">{{ entry.description }}</p>
+          {% if entry.description|length > 180 %}
+          <button class="hm__read-more"
+                  onclick="hmToggleDesc(this,'hm-desc-{{ entry.id }}')"
+                  aria-expanded="false"
+                  aria-controls="hm-desc-{{ entry.id }}">
+            Read full report ↓
+          </button>
+          {% endif %}
+        </div>
+
+        {% if all_media %}
+        {% with show=all_media|slice:":4" %}
+        <div class="hm__media" role="group" aria-label="{{ media_count }} media file{{ media_count|pluralize }}">
+          <div class="hm__media-grid"
+               data-count="{% if media_count == 1 %}1{% elif media_count == 2 %}2{% elif media_count == 3 %}3{% elif media_count == 4 %}4{% else %}many{% endif %}">
+            {% for m in show %}
+            <div class="hm__media-item"
+                 role="button" tabindex="0"
+                 onclick="hmOpenLb(this)"
+                 onkeydown="if(event.key==='Enter'||event.key===' ')hmOpenLb(this)"
+                 data-src="{{ m.file.url }}"
+                 data-type="{{ m.media_type }}"
+                 data-entry="{{ entry.id }}"
+                 aria-label="{% if m.media_type == 'video' %}Play video{% else %}View image{% endif %} {{ forloop.counter }}">
+              {% if m.media_type == 'video' %}
+                <video src="{{ m.file.url }}" preload="none" muted playsinline aria-hidden="true"></video>
+                <div class="hm__play-icon" aria-hidden="true">
+                  <div class="hm__play-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
+                  </div>
+                </div>
+              {% else %}
+                <img src="{{ m.file.url }}"
+                     alt="Evidence {{ forloop.counter }} — {{ entry.title }}"
+                     loading="lazy" decoding="async" itemprop="image">
+              {% endif %}
+              {% if forloop.last and media_count > 4 %}
+              <div class="hm__more-overlay">+{{ media_count|add:"-4" }}</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endwith %}
+        {% endif %}
+
+        <div class="hm__card-footer">
+          <span class="hm__card-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ID {{ entry.id }}
+          </span>
+          {% if media_count > 0 %}
+          <span class="hm__card-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            {{ media_count }} file{{ media_count|pluralize }}
+          </span>
+          {% endif %}
+          <span class="hm__card-chip" style="margin-left:auto">Anonymous Reporter</span>
+        </div>
+
+      </article>
+      {% endwith %}
+      {% endfor %}
+
+      {% if entries.has_other_pages %}
+      <nav class="hm__pagination" aria-label="Navigate reports">
+        {% if entries.has_previous %}
+          <a href="?page={{ entries.previous_page_number }}" class="hm__pg-btn" aria-label="Previous page">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+        {% else %}
+          <span class="hm__pg-btn disabled" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </span>
+        {% endif %}
+
+        {% for num in entries.paginator.page_range %}
+          {% if num == entries.number %}
+            <span class="hm__pg-btn active" aria-current="page">{{ num }}</span>
+          {% elif num == 1 or num == entries.paginator.num_pages or num >= entries.number|add:"-2" and num <= entries.number|add:"2" %}
+            <a href="?page={{ num }}" class="hm__pg-btn" aria-label="Page {{ num }}">{{ num }}</a>
+          {% elif num == entries.number|add:"-3" or num == entries.number|add:"3" %}
+            <span class="hm__pg-ellipsis">&hellip;</span>
+          {% endif %}
+        {% endfor %}
+
+        {% if entries.has_next %}
+          <a href="?page={{ entries.next_page_number }}" class="hm__pg-btn" aria-label="Next page">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        {% else %}
+          <span class="hm__pg-btn disabled" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        {% endif %}
+      </nav>
+      {% endif %}
+
+    {% else %}
+    <div class="hm__empty" role="status">
+      <p class="hm__empty-title">No Reports Yet</p>
+      <p class="hm__empty-sub">Be the first to expose the truth.</p>
+      <a href="{% url 'post_corruption' %}" class="hm__report-btn" style="display:inline-flex;margin-top:8px;">File a Report</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="hm__lb" id="hmLb" role="dialog" aria-modal="true" aria-label="Media viewer">
+  <button class="hm__lb-ui-btn hm__lb-close" onclick="hmCloseLb()" aria-label="Close">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="hm__lb-ui-btn hm__lb-prev" onclick="hmLbNav(-1)" aria-label="Previous">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="hm__lb-media" id="hmLbMedia"></div>
+  <button class="hm__lb-ui-btn hm__lb-next" onclick="hmLbNav(1)" aria-label="Next">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="hm__lb-counter" id="hmLbCounter" aria-live="polite"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function hmToggleDesc(btn, id) {
+  const el = document.getElementById(id);
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  if (open) {
+    el.style.webkitLineClamp = '3';
+    el.style.display = '-webkit-box';
+    btn.textContent = 'Read full report ↓';
+    btn.setAttribute('aria-expanded', 'false');
+  } else {
+    el.style.webkitLineClamp = 'unset';
+    el.style.display = 'block';
+    btn.textContent = 'Collapse ↑';
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+let hmItems = [], hmIdx = 0;
+
+function hmGetItems(entryId) {
+  return [...document.querySelectorAll(`.hm__media-item[data-entry="${entryId}"]`)]
+    .map(el => ({ src: el.dataset.src, type: el.dataset.type }));
+}
+
+function hmOpenLb(el) {
+  hmItems = hmGetItems(el.dataset.entry);
+  hmIdx = hmItems.findIndex(i => i.src === el.dataset.src);
+  if (hmIdx < 0) hmIdx = 0;
+  hmRenderLb();
+  document.getElementById('hmLb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function hmCloseLb() {
+  const lb = document.getElementById('hmLb');
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+  const v = lb.querySelector('video');
+  if (v) { v.pause(); v.removeAttribute('src'); }
+}
+
+function hmLbNav(d) {
+  hmIdx = (hmIdx + d + hmItems.length) % hmItems.length;
+  hmRenderLb();
+}
+
+function hmRenderLb() {
+  const wrap = document.getElementById('hmLbMedia');
+  const counter = document.getElementById('hmLbCounter');
+  const item = hmItems[hmIdx];
+  wrap.innerHTML = '';
+  if (item.type === 'video') {
+    const v = document.createElement('video');
+    v.src = item.src;
+    v.controls = true;
+    v.autoplay = true;
+    v.setAttribute('playsinline', '');
+    wrap.appendChild(v);
+  } else {
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.alt = `Evidence ${hmIdx+1} of ${hmItems.length}`;
+    wrap.appendChild(img);
+  }
+  const show = hmItems.length > 1;
+  document.querySelector('.hm__lb-prev').style.display = show ? 'flex' : 'none';
+  document.querySelector('.hm__lb-next').style.display = show ? 'flex' : 'none';
+  counter.textContent = show ? `${hmIdx+1} / ${hmItems.length}` : '';
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('hmLb').classList.contains('open')) return;
+  if (e.key === 'Escape')     hmCloseLb();
+  if (e.key === 'ArrowLeft')  hmLbNav(-1);
+  if (e.key === 'ArrowRight') hmLbNav(1);
+});
+document.getElementById('hmLb').addEventListener('click', function(e) {
+  if (e.target === this) hmCloseLb();
+});
+</script>
+{% endblock %}

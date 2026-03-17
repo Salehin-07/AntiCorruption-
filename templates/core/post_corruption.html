@@ -1,0 +1,781 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}File a Report — AntiCorruption{% endblock %}
+{% block meta_description %}Submit an anonymous corruption report. No sign-up required. Your identity is never stored.{% endblock %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   POST CORRUPTION PAGE — investigative editorial
+   Prefix: pc__
+══════════════════════════════════════════════ */
+.pc__root {
+  --bg:           #080808;
+  --bg-card:      #0e0e0e;
+  --bg-input:     #111111;
+  --bg-hover:     #161616;
+  --line:         #1e1e1e;
+  --line-mid:     #2a2a2a;
+  --line-focus:   #3a3835;
+  --text:         #e2ddd6;
+  --text-dim:     #7a7570;
+  --text-faint:   #3a3835;
+  --red:          #e63227;
+  --red-dim:      #7a1a15;
+  --red-soft:     rgba(230,50,39,0.08);
+  --red-border:   rgba(230,50,39,0.3);
+  --green:        #2a7a4a;
+  --green-soft:   rgba(42,122,74,0.1);
+  --white:        #f0ece6;
+  --mono:         'IBM Plex Mono', monospace;
+  --display:      'Bebas Neue', sans-serif;
+  --serif:        'Libre Baskerville', Georgia, serif;
+  --sans:         'Barlow', system-ui, sans-serif;
+  --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+  --radius:       2px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pc__root {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* grain */
+.pc__root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ══ PAGE HEADER ══ */
+.pc__header {
+  position: relative;
+  border-bottom: 1px solid var(--line-mid);
+  overflow: hidden;
+}
+.pc__header::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--red);
+}
+.pc__header-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 32px 40px;
+}
+.pc__header-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+.pc__kicker-dot {
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: pc-blink 1.4s ease-in-out infinite;
+}
+@keyframes pc-blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+.pc__header-title {
+  font-family: var(--display);
+  font-size: clamp(48px, 8vw, 80px);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.pc__header-title span { color: var(--red); }
+.pc__header-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--red-soft);
+  border: 1px solid var(--red-border);
+  padding: 14px 16px;
+  margin-top: 24px;
+}
+.pc__notice-icon { flex-shrink: 0; color: var(--red); margin-top: 1px; }
+.pc__notice-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+.pc__notice-text strong {
+  color: var(--red);
+  font-weight: 500;
+}
+
+/* ══ FORM WRAPPER ══ */
+.pc__form-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+/* ══ FIELD ══ */
+.pc__field {
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: pc-up 0.5s var(--ease) forwards;
+}
+.pc__field:nth-child(1) { animation-delay: 0.05s; }
+.pc__field:nth-child(2) { animation-delay: 0.10s; }
+.pc__field:nth-child(3) { animation-delay: 0.15s; }
+@keyframes pc-up {
+  to { opacity: 1; transform: none; }
+}
+
+.pc__label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.pc__label-text {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.pc__label-req {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--red);
+}
+.pc__label-hint {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-left: auto;
+}
+
+.pc__input,
+.pc__textarea {
+  display: block;
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--line-mid);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 400;
+  padding: 14px 16px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+.pc__input::placeholder,
+.pc__textarea::placeholder {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.pc__input:hover,
+.pc__textarea:hover {
+  border-color: var(--line-focus);
+  background: var(--bg-hover);
+}
+.pc__input:focus,
+.pc__textarea:focus {
+  border-color: var(--red);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 3px var(--red-soft);
+}
+.pc__input.error,
+.pc__textarea.error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-soft);
+}
+.pc__textarea {
+  resize: vertical;
+  min-height: 160px;
+  line-height: 1.7;
+}
+.pc__char-count {
+  display: flex;
+  justify-content: flex-end;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-top: 6px;
+  transition: color 0.2s;
+}
+.pc__char-count.warn { color: var(--red); }
+
+/* ══ DROP ZONE ══ */
+.pc__drop-zone {
+  position: relative;
+  border: 1px dashed var(--line-mid);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pc__drop-zone:hover,
+.pc__drop-zone.dragover {
+  border-color: var(--red);
+  background: var(--bg-hover);
+}
+.pc__drop-zone.dragover { box-shadow: 0 0 0 3px var(--red-soft); }
+.pc__drop-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.pc__drop-icon {
+  color: var(--text-faint);
+  margin-bottom: 12px;
+  transition: color 0.2s, transform 0.3s var(--ease);
+}
+.pc__drop-zone:hover .pc__drop-icon,
+.pc__drop-zone.dragover .pc__drop-icon {
+  color: var(--red);
+  transform: translateY(-4px);
+}
+.pc__drop-title {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.pc__drop-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.pc__drop-sub span { color: var(--red); }
+
+/* ══ FILE PREVIEWS ══ */
+.pc__previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.pc__preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pc__preview-item img,
+.pc__preview-item video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.pc__preview-remove {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 22px; height: 22px;
+  background: rgba(8,8,8,0.85);
+  border: 1px solid var(--line-mid);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+  z-index: 2;
+}
+.pc__preview-remove:hover {
+  background: var(--red);
+  color: var(--white);
+  border-color: var(--red);
+}
+.pc__preview-type {
+  position: absolute;
+  bottom: 4px; left: 4px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(8,8,8,0.8);
+  color: var(--text-dim);
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+.pc__file-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* ══ FIELD ERROR ══ */
+.pc__field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  margin-top: 8px;
+}
+
+/* ══ DIVIDER ══ */
+.pc__divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 8px 0 32px;
+}
+
+/* ══ SUBMIT AREA ══ */
+.pc__submit-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.pc__submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 18px 36px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--red-dim);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s, background 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.pc__submit-btn:hover:not(:disabled) {
+  background: #f03c31;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--red-dim);
+}
+.pc__submit-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--red-dim);
+}
+.pc__submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pc__submit-note {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1.6;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+/* loading spinner inside button */
+.pc__spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(240,236,230,0.3);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: pc-spin 0.7s linear infinite;
+}
+@keyframes pc-spin { to { transform: rotate(360deg); } }
+.pc__submit-btn.loading .pc__spinner { display: block; }
+.pc__submit-btn.loading .pc__btn-text { opacity: 0.6; }
+
+/* ══ DJANGO FORM ERRORS (non-field) ══ */
+.pc__form-errors {
+  background: var(--red-soft);
+  border: 1px solid var(--red-border);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+.pc__form-errors-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.pc__form-errors ul {
+  list-style: none;
+  padding: 0;
+}
+.pc__form-errors li {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 3px 0;
+}
+.pc__form-errors li::before {
+  content: '— ';
+  color: var(--red);
+}
+
+/* ══ BACK LINK ══ */
+.pc__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.15s;
+}
+.pc__back:hover { color: var(--text-dim); }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 600px) {
+  .pc__header-inner { padding: 36px 20px 28px; }
+  .pc__form-wrapper { padding: 28px 16px 60px; }
+  .pc__submit-area { flex-direction: column; align-items: flex-start; }
+  .pc__submit-btn { width: 100%; justify-content: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pc__root">
+
+  <!-- ══ PAGE HEADER ══ -->
+  <section class="pc__header" aria-labelledby="pc-title">
+    <div class="pc__header-inner">
+      <div class="pc__header-kicker">
+        <span class="pc__kicker-dot"></span>
+        Secure — Anonymous — Permanent
+      </div>
+      <h1 class="pc__header-title" id="pc-title">
+        File a<br><span>Report</span>
+      </h1>
+      <div class="pc__header-notice" role="note" aria-label="Privacy notice">
+        <svg class="pc__notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <p class="pc__notice-text">
+          <strong>Your identity is never stored.</strong>
+          No IP addresses, no cookies, no metadata are logged with your submission.
+          All media is stored securely. This report is permanent and cannot be retracted.
+          By submitting, you confirm this report is truthful to the best of your knowledge.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FORM ══ -->
+  <div class="pc__form-wrapper">
+    <a href="{% url 'home' %}" class="pc__back" aria-label="Back to reports">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to reports
+    </a>
+
+    {% if form.non_field_errors %}
+    <div class="pc__form-errors" role="alert" aria-live="assertive">
+      <p class="pc__form-errors-title">Submission errors</p>
+      <ul>
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form method="post"
+          enctype="multipart/form-data"
+          id="pcForm"
+          novalidate
+          aria-label="Corruption report submission form">
+      {% csrf_token %}
+
+      <!-- TITLE -->
+      <div class="pc__field">
+        <div class="pc__label">
+          <label class="pc__label-text" for="id_title">Report Title</label>
+          <span class="pc__label-req" aria-hidden="true">*</span>
+          <span class="pc__label-hint">Max 256 characters</span>
+        </div>
+        <input
+          type="text"
+          id="id_title"
+          name="title"
+          class="pc__input {% if form.title.errors %}error{% endif %}"
+          placeholder="e.g. Mayor embezzles public funds via fake contractors"
+          maxlength="256"
+          required
+          aria-required="true"
+          aria-describedby="title-counter {% if form.title.errors %}title-error{% endif %}"
+          value="{{ form.title.value|default:'' }}"
+          oninput="pcCharCount(this,'title-counter',256)"
+        >
+        <div class="pc__char-count" id="title-counter" aria-live="polite">0 / 256</div>
+        {% if form.title.errors %}
+        <div class="pc__field-error" id="title-error" role="alert">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ form.title.errors.0 }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="pc__field">
+        <div class="pc__label">
+          <label class="pc__label-text" for="id_description">Full Description</label>
+          <span class="pc__label-req" aria-hidden="true">*</span>
+          <span class="pc__label-hint">Be specific. Names, dates, amounts, locations.</span>
+        </div>
+        <textarea
+          id="id_description"
+          name="description"
+          class="pc__textarea {% if form.description.errors %}error{% endif %}"
+          placeholder="Describe the corruption in detail. Include names, positions, dates, amounts, how the corruption operates, and any other relevant information. The more specific, the stronger the report."
+          required
+          aria-required="true"
+          aria-describedby="desc-counter {% if form.description.errors %}desc-error{% endif %}"
+          oninput="pcCharCount(this,'desc-counter',0)"
+        >{{ form.description.value|default:'' }}</textarea>
+        <div class="pc__char-count" id="desc-counter" aria-live="polite">0 characters</div>
+        {% if form.description.errors %}
+        <div class="pc__field-error" id="desc-error" role="alert">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ form.description.errors.0 }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- MEDIA -->
+      <div class="pc__field">
+        <div class="pc__label">
+          <span class="pc__label-text">Evidence Files</span>
+          <span class="pc__label-hint">Images &amp; videos — optional</span>
+        </div>
+        <div class="pc__drop-zone"
+             id="pcDropZone"
+             role="button"
+             tabindex="0"
+             aria-label="Upload evidence files. Click or drag and drop images or videos."
+             onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('pcFileInput').click()">
+          <input
+            type="file"
+            id="pcFileInput"
+            name="media_files"
+            class="pc__drop-input"
+            multiple
+            accept="image/*,video/mp4,video/webm,video/quicktime,video/x-msvideo,video/x-matroska"
+            aria-hidden="true"
+            tabindex="-1"
+            onchange="pcHandleFiles(this.files)"
+          >
+          <div class="pc__drop-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p class="pc__drop-title">Drop Files Here</p>
+          <p class="pc__drop-sub">or <span>click to browse</span> &nbsp;·&nbsp; images &amp; videos accepted</p>
+        </div>
+        <div class="pc__previews" id="pcPreviews" role="list" aria-label="Selected files"></div>
+        <p class="pc__file-count" id="pcFileCount" aria-live="polite"></p>
+      </div>
+
+      <hr class="pc__divider">
+
+      <div class="pc__submit-area">
+        <button type="submit"
+                class="pc__submit-btn"
+                id="pcSubmitBtn"
+                aria-label="Submit anonymous corruption report">
+          <span class="pc__spinner" aria-hidden="true"></span>
+          <span class="pc__btn-text">Submit Report</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+        <p class="pc__submit-note">
+          Anonymous &amp; permanent<br>
+          No account required
+        </p>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ── CHAR COUNTER ── */
+function pcCharCount(el, counterId, max) {
+  const len = el.value.length;
+  const counter = document.getElementById(counterId);
+  if (max > 0) {
+    counter.textContent = `${len} / ${max}`;
+    counter.classList.toggle('warn', len > max * 0.9);
+  } else {
+    counter.textContent = `${len} character${len !== 1 ? 's' : ''}`;
+  }
+}
+
+/* Initialise counters on load if values pre-filled */
+document.addEventListener('DOMContentLoaded', () => {
+  const titleEl = document.getElementById('id_title');
+  const descEl  = document.getElementById('id_description');
+  if (titleEl.value) pcCharCount(titleEl, 'title-counter', 256);
+  if (descEl.value)  pcCharCount(descEl,  'desc-counter',  0);
+});
+
+/* ── DRAG & DROP ── */
+const dropZone = document.getElementById('pcDropZone');
+
+['dragenter','dragover'].forEach(evt => {
+  dropZone.addEventListener(evt, e => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(evt => {
+  dropZone.addEventListener(evt, e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+  });
+});
+dropZone.addEventListener('drop', e => {
+  pcHandleFiles(e.dataTransfer.files);
+});
+
+/* ── FILE HANDLING ── */
+let pcFiles = [];
+
+function pcHandleFiles(incoming) {
+  const allowed = [
+    'image/jpeg','image/png','image/gif','image/webp',
+    'video/mp4','video/webm','video/quicktime',
+    'video/x-msvideo','video/x-matroska'
+  ];
+  Array.from(incoming).forEach(f => {
+    if (!allowed.includes(f.type)) return;
+    if (pcFiles.find(x => x.name === f.name && x.size === f.size)) return; // dedupe
+    pcFiles.push(f);
+  });
+  pcSyncInput();
+  pcRenderPreviews();
+}
+
+function pcRemoveFile(idx) {
+  pcFiles.splice(idx, 1);
+  pcSyncInput();
+  pcRenderPreviews();
+}
+
+function pcSyncInput() {
+  // Rebuild the FileList on the input using DataTransfer
+  const dt = new DataTransfer();
+  pcFiles.forEach(f => dt.items.add(f));
+  document.getElementById('pcFileInput').files = dt.files;
+}
+
+function pcRenderPreviews() {
+  const wrap  = document.getElementById('pcPreviews');
+  const count = document.getElementById('pcFileCount');
+  wrap.innerHTML = '';
+
+  pcFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'pc__preview-item';
+    item.setAttribute('role', 'listitem');
+
+    const isVideo = f.type.startsWith('video/');
+    const url = URL.createObjectURL(f);
+
+    if (isVideo) {
+      const v = document.createElement('video');
+      v.src = url; v.muted = true; v.preload = 'metadata';
+      v.setAttribute('aria-label', f.name);
+      item.appendChild(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = f.name;
+      item.appendChild(img);
+    }
+
+    const typeTag = document.createElement('span');
+    typeTag.className = 'pc__preview-type';
+    typeTag.textContent = isVideo ? 'VID' : 'IMG';
+    item.appendChild(typeTag);
+
+    const rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'pc__preview-remove';
+    rm.setAttribute('aria-label', `Remove ${f.name}`);
+    rm.innerHTML = '×';
+    rm.onclick = () => pcRemoveFile(i);
+    item.appendChild(rm);
+
+    wrap.appendChild(item);
+  });
+
+  count.textContent = pcFiles.length > 0
+    ? `${pcFiles.length} file${pcFiles.length !== 1 ? 's' : ''} selected`
+    : '';
+}
+
+/* ── SUBMIT LOADING STATE ── */
+document.getElementById('pcForm').addEventListener('submit', function(e) {
+  const btn = document.getElementById('pcSubmitBtn');
+  // Basic client-side validation
+  const title = document.getElementById('id_title').value.trim();
+  const desc  = document.getElementById('id_description').value.trim();
+  if (!title || !desc) return; // let browser/Django handle it
+  btn.classList.add('loading');
+  btn.disabled = true;
+});
+</script>
+{% endblock %}
