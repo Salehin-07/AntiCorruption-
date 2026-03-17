@@ -9,3 +9,4 @@ six
 dj_database_url
 psycopg2
 gunicorn
+python-dotenv
