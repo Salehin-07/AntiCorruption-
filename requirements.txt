@@ -1,5 +1,6 @@
 django
 django-jazzmin
+django-pwa
 whitenoise
 pillow
 django-storages 
