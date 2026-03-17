@@ -8,3 +8,4 @@ python-dateutil
 six
 dj_database_url
 psycog2
+gunicorn
