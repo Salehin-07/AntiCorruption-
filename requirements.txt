@@ -7,5 +7,5 @@ boto3
 python-dateutil
 six
 dj_database_url
-psycog2
+psycopg2
 gunicorn
